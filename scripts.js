@@ -11,7 +11,52 @@ var myTableURL = "https://www.googleapis.com/fusiontables/v1/query?sql=SELECT+*+
 console.log("Hi there. About to make a pretty cool visualization about Finance Jobs in New York.");
 
 
+function dataLoaded(FINJOBS) {
 
+	//Console log that the data has loaded just to double check. Put the name of the data UNRATE just to check.
+	console.log(FINJOBS);
+
+	var gDataTable = new google.visualization.DataTable();
+
+	//When adding columns, the first parameter is the datatype in that column.
+	//The second parameter is the name of the column.
+
+	gDataTable.addColumn('string', FINJOBS.columns[0]);
+
+	gDataTable.addColumn('number', FINJOBS.columns[1]);
+
+	//Now that we have the headers, lets add some rows.
+
+	gDataTable.addRows(FINJOBS.rows)
+
+	//Create options object to add fanciness to the chart, like a title.
+	var chartOptions = {
+		title : "Finance Jobs Since 1990"
+	};
+
+	//Now I tell it to create a line chart and give it a div that matches the index.html, meaning I should now go back and create
+	//that div in my index.
+	var myFinJobsChart = new google.visualization.LineChart(document.getElementById('myFinJobsChartDiv'));
+	//Telling it to draw it using my data and using my options! Finished! So exciting!
+	myFinJobsChart.draw(gDataTable, chartOptions);
+}
+
+
+
+//Selecting my date using the e.target.id. This will push data based on what button is pressed. 
+function showNewData(e) {
+	var myID = e.target.id;
+	//e.g. "year_2000"
+	console.log(myID);
+	//splits it into an array, "2000" will be second
+	var myNameArray = myID.split("_");
+	//grab the year
+	var myYear = myNameArray[1];
+
+	$.get(myTableURL + "'" + myYear + "-12-01'" + myKey, dataLoaded, "json");
+	
+	History.pushState({year:myYear}, "Unemployment from - "+myYear, "?year="+myYear); // logs {state:1}, "State 1", "?state=1"
+}
 
 
 
